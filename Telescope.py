@@ -3,9 +3,6 @@
 # License: MIT License https://opensource.org/licenses/MIT
 import time
 
-# Import the Robot.py file (must be in the same directory as this file!).
-import Robot
-
 #!/usr/bin/python
 #import Adafruit_MotorHAT, Adafruit_DCMotor, Adafruit_Stepper
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor, Adafruit_StepperMotor
@@ -52,8 +49,6 @@ rotation.setSpeed(30)
 # motor.  Likewise if it veers right then adjust the _left_ motor trim to a sma$
 # negative value.  Increase or decrease the trim value until the bot moves
 # straight forward/backward.
-LEFT_TRIM   = 0
-RIGHT_TRIM  = 0
 
 
 # Create an instance of the robot with the specified trim values.
