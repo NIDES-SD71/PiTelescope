@@ -21,15 +21,21 @@ mh2 = Adafruit_MotorHAT(addr=0x61)
 
 # recommended for auto-disabling motors on shutdown!
 def turnOffMotors():
+	for i in range(1,4)
+		mh.getMotor(i).run(Adafruit_MotorHAT.RELEASE)
+	for i in range(1,4)
+		mh2.getMotor(i).run(Adafruit_MotorHAT.RELEASE)
+	
+	'''
     mh.getMotor(1).run(Adafruit_MotorHAT.RELEASE)
     mh.getMotor(2).run(Adafruit_MotorHAT.RELEASE)
     mh.getMotor(3).run(Adafruit_MotorHAT.RELEASE)
     mh.getMotor(4).run(Adafruit_MotorHAT.RELEASE)
-    mh2.getMotor(1).run(Adafruit_MotorHAT.RELEASE)
+	mh2.getMotor(1).run(Adafruit_MotorHAT.RELEASE)
     mh2.getMotor(2).run(Adafruit_MotorHAT.RELEASE)
     mh2.getMotor(3).run(Adafruit_MotorHAT.RELEASE)
     mh2.getMotor(4).run(Adafruit_MotorHAT.RELEASE)
-
+	'''
 
 atexit.register(turnOffMotors)
 
