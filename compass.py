@@ -19,10 +19,6 @@ prev_y = 0
 led_degree_ratio = len(led_loop) / 360.0
 
 while True:
-    orientation = sense.get_orientation()
-    p=(orientation["pitch"])
-    r=(orientation["roll"])
-    y=(orientation["yaw"])
     dir = sense.get_compass()
     dir_inverted = 90 - dir  # So LED appears to follow North
     led_index = int(led_degree_ratio * dir_inverted)
@@ -36,7 +32,6 @@ while True:
 
     sense.set_pixel(x, y, 0, 0, 255)
     print('compass=%s' % (dir))
-    print("p: %s" % (p))
 
     prev_x = x
     prev_y = y
