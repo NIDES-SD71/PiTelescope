@@ -34,8 +34,6 @@ atexit.register(turnOffMotors)
 
 angle = mh2.getStepper(1400, 1) # 1400 steps/rev, motor port #1
 rotation = mh2.getStepper(1400, 2) # 1400 steps/rev, motor port #2
-focus = mh.getStepper(4096, 2) # 4096 steps/rev, motor port #2
-focus.setSpeed(30) # set power to 30 (max: 255)
 angle.setSpeed(30) # set power to 30 (max: 255)
 rotation.setSpeed(30) # set power to 30 (max: 255)
 
@@ -60,14 +58,6 @@ while True:
     if (char == "q"):
         print("Stopping...")
         exit(0)
-
-    elif (char == "t"):
-        print(" ")
-        focus.step(1, Adafruit_MotorHAT.FORWARD, Adafruit_MotorHAT.DOUBLE)
-
-    elif (char == "g"):
-        print(" ")
-        focus.step(1, Adafruit_MotorHAT.BACKWARD, Adafruit_MotorHAT.DOUBLE)
 
     elif (char == "r"):
         print(" ")
