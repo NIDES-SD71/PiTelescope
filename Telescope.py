@@ -1,27 +1,22 @@
-# Simple two DC motor robot class usage example.
-# Author: Tony DiCola
-# License: MIT License https://opensource.org/licenses/MIT
-import time
+# Adaptation of "Simple two DC motor robot class usage example.", by Tony DiCola, under the MIT License https://opensource.org/licenses/MIT
 
-#!/usr/bin/python
+#!/usr/bin/python3
 #import Adafruit_MotorHAT, Adafruit_DCMotor, Adafruit_Stepper
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor, Adafruit_StepperMotor
-
-import time
-import atexit
+import sys, termios, tty, os, time, atexit
 
 # create a default object, no changes to I2C address or frequency
 mh = Adafruit_MotorHAT(addr=0x60)
 mh2 = Adafruit_MotorHAT(addr=0x61)
 
-# recommended for auto-disabling motors on shutdown!
 
-# recommended for auto-disabling motors on shutdown!
 def turnOffMotors():
-	for i in range(1,4)
-		mh.getMotor(i).run(Adafruit_MotorHAT.RELEASE)
-	for i in range(1,4)
-		mh2.getMotor(i).run(Adafruit_MotorHAT.RELEASE)
+	for i in range(1,4):
+		for j in range(1,2):
+			if(j == 1):
+				mh.getMotor(i).run(Adafruit_MotorHAT.RELEASE)
+			if(j == 2):
+				mh2.getMotor(i).run(Adafruit_MotorHAT.RELEASE)
 	
 	'''
     mh.getMotor(1).run(Adafruit_MotorHAT.RELEASE)
@@ -75,11 +70,8 @@ rotation.setSpeed(30)
 #                     is optional and if not specified the robot will start mov$
 #                     forever
 
-#!/usr/bin/python3
-
 # adapted from https://github.com/recantha/EduKit3-RC-Keyboard/blob/master/rc_k$
 
-import sys, termios, tty, os, time
 
 def getch():
     fd = sys.stdin.fileno()
