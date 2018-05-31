@@ -1,13 +1,15 @@
 #!/usr/bin/python2
-import sys, argparse, logging, socket
+import sys, argparse, logging, logging.config, socket
 
 parser = argparse.ArgumentParser()
 parser.add_argument("port", help="Port to listen on", type=int)
 parser.add_argument("--host", help="IP to listen on")
-parser.add_argument("--loglevel", help="Log level to print/write")
-parser.add_argument("--logdestination", help="Log output file path")
+#parser.add_argument("--loglevel", help="Log level to print/write")
+#parser.add_argument("--logdestination", help="Log output file path")
 args = parser.parse_args()
 
+logging.config.fileConfig('logging.ini')
+'''
 # TODO review these log levels, or whether the switch is even nessicary
 logLevel = args.loglevel;
 if(isinstance(logLevel, str)): # basestring == python 2
@@ -24,6 +26,7 @@ else:
 # TODO validiate file path
 logDestination = args.logdestination
 
+
 logging.basicConfig(level=logLevel,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M',
@@ -32,8 +35,10 @@ logging.basicConfig(level=logLevel,
 
 console = logging.StreamHandler()
 console.setLevel(logLevel)
-console.setFormatter(logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s'))
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
+'''
 
 # TODO probably needs to be moved to other file eventually
 HOST = args.host
@@ -47,7 +52,7 @@ BUFFERSIZE = 1024
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST,PORT))
 
-logging.info("Listening as %s:%d", HOST, PORT)
+logging.info("Listening on %s:%d", HOST, PORT)
 # TODO temp code that repeatedly logs data from any connecting host
 while 1:
     s.listen(1)    
