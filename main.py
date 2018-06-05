@@ -27,7 +27,7 @@ while 1:
     connection, address = s.accept()
     logging.info('Incoming connection from %s', address)
 
-    data = ConstBitStream(bytes=connection.recv(BUFFERSIZE), length=160)
+    data = bitstring.ConstBitStream(bytes=connection.recv(BUFFERSIZE), length=160)
  
     messageSize = data.read('intle:16')
     messageType = data.read('intle:16')
@@ -46,5 +46,9 @@ while 1:
     declination_int = data.read('intle:32')
 
     #remember to send coords back to stellarium 10 times in a row
-    logging.info("Received Message Size: %d\nReceived Message Type: %d\nReceived Message Time: %d\nDestination Right Ascension: %d\nDestination Declination: %d", messageSize, messageType, messageTime, rightAscension_uint, declination_int)
+    logging.info("Received Message Size: %d", messageSize)
+    logging.info("Received Message Type: %d", messageType)
+    logging.info("Received Message Time: %d", messageTime)
+    logging.info("Destination Right Ascension: %d", rightAscension_uint)
+    logging.info("Destination Declination: %d", declination_int)
     connection.close()
