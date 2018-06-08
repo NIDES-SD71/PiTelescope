@@ -16,7 +16,7 @@ if( HOST == None):
     HOST = s.getsockname()[0]
 
 PORT = args.port # TODO validate port
-BUFFERSIZE = 1024
+BUFFERSIZE = 160
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST,PORT))
 
@@ -26,29 +26,37 @@ while 1:
     s.listen(1)
     connection, address = s.accept()
     logging.info('Incoming connection from %s', address)
+    while 1:
+        
+        rawdata = connection.recv(BUFFERSIZE)
+        print(rawdata)
+        logging.info('%s', rawdata)
+        if(sys.getsizeof(rawdata) > 0):
+            data = bitstring.ConstBitStream(bytes=rawdata, length=160)
+            print(data)
+            logging.info('%s', data) 
 
-    data = bitstring.ConstBitStream(bytes=connection.recv(BUFFERSIZE), length=160)
- 
-    messageSize = data.read('intle:16')
-    messageType = data.read('intle:16')
-    messageTime = data.read('intle:64')
+            messageSize = data.read('intle:16')
+            logging.info("Received Message Size: %d", messageSize)
+
+            messageType = data.read('intle:16')
+            logging.info("Received Message Type: %d", messageType)
+
+            messageTime = data.read('intle:64')
+            logging.info("Received Message Time: %d", messageTime)
         
     # RA: 
     #ant_pos = data.bitpos
     #rightAscension = data.read('hex:32')
     #data.bitpos = ant_pos
-    rightAscension_uint = data.read('uintle:32')
- 
+            rightAscension_uint = data.read('uintle:32')
+            logging.info("Destination Right Ascension: %d", rightAscension_uint)
+    
     # DEC:
     #ant_pos = data.bitpos
     #declination = data.read('hex:32')
     #data.bitpos = ant_pos
-    declination_int = data.read('intle:32')
-
+            declination_int = data.read('intle:32')
+        logging.info("Destination Declination: %d", declination_int)
     #remember to send coords back to stellarium 10 times in a row
-    logging.info("Received Message Size: %d", messageSize)
-    logging.info("Received Message Type: %d", messageType)
-    logging.info("Received Message Time: %d", messageTime)
-    logging.info("Destination Right Ascension: %d", rightAscension_uint)
-    logging.info("Destination Declination: %d", declination_int)
-    connection.close()
+    #connection.close()
