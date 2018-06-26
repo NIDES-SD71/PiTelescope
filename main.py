@@ -21,37 +21,41 @@ BUFFERSIZE = 160
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST,PORT))
 
-logging.info("Listening on %s:%d", HOST, PORT)
 # TODO temp code that repeatedly logs data from any connecting host
 while 1:
+    logging.info("Listening on %s:%d", HOST, PORT)
     s.listen(1)
     connection, address = s.accept()
     logging.info('Incoming connection from %s', address)
-    while 1:
-        rawdata = connection.recv(BUFFERSIZE)
-        size = sys.getsizeof(rawdata) 
-        logging.info('%s', rawdata)
-        #TODO implement checking for ending message
-        if(size != 20):
-            continue
+    try:
+        while 1:
+            rawdata = connection.recv(BUFFERSIZE)
+            rawSize = sys.getsizeof(rawdata) 
+            logging.debug('Data received: %s', rawdata)
+            #TODO implement checking for ending message
+            if(rawSize != 20):
+                logging.debug('Rejected')
+                continue
+            logging.debug('Accepted')
         
-        data = bitstring.ConstBitStream(bytes=rawdata, length=size*8)
-        logging.info('%s', data) 
+            data = bitstring.ConstBitStream(bytes=rawdata, length=rawSize * 8)
+            logging.debug('Bitstring created: %s', data) 
         
-        messageSize = data.read('intle:16')
-        logging.info("Received Message Size: %d", messageSize)
+            messageSize = data.read('intle:16')
+            logging.info("Received Message Size: %d", messageSize)
 
-        messageType = data.read('intle:16')
-        logging.info("Received Message Type: %d", messageType)
+            messageType = data.read('intle:16')
+            logging.info("Received Message Type: %d", messageType)
         
-        messageTime = data.read('intle:64')
-        logging.info("Received Message Time: %d", messageTime)
+            messageTime = data.read('intle:64')
+            logging.info("Received Message Time: %d", messageTime)
         
-        rightAscension = data.read('uintle:32')
-        logging.info("Destination Right Ascension: %d", rightAscension)
+            rightAscension = data.read('uintle:32')
+            logging.info("Destination Right Ascension: %d", rightAscension)
 
-        declination = data.read('intle:32')
-        logging.info("Destination Declination: %d", declination)
+            declination = data.read('intle:32')
+            logging.info("Destination Declination: %d", declination)
     
-        #remember to send coords back to stellarium 10 times in a row
-    connection.close()
+            #remember to send coords back to stellarium 10 times in a row
+    except: #May end up needing to explicitly state KeyboardInterrupt; Needs further testing
+        connection.close()
