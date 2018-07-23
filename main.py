@@ -31,30 +31,20 @@ try:
         try:
             while 1:
                 data = connection.recv(BUFFERSIZE)
-                #rawSize = sys.getsizeof(data) 
+                rawSize = len(data) 
                 logging.debug('Data received: %s', data)
                 #TODO implement checking for ending message
-                #TODO add back in length checking
-                #if(rawSize != 20):
-                #    logging.debug('Rejected')
-                #    continue
-
+                if(rawSize != 20):
+                    logging.debug('Rejected (%d != 20)', rawSize)
+                    continue
                 logging.debug('Accepted')
         
-                messageSize = struct.unpack("<h", data[0:2])[0]
+                messageSize,messageType,messageTime,destRightAscension,destDeclination = struct.unpack("<hhqIi", data)
                 logging.info("Received Message Size: %d", messageSize)
-
-                messageType = struct.unpack("<h", data[2:2])[0]
                 logging.info("Received Message Type: %d", messageType)
-        
-                messageTime = struct.unpack("<q", data[4:8])[0]
                 logging.info("Received Message Time: %d", messageTime)
-        
-                rightAscension = struct.unpack("<I", data[12:4])[0]
-                logging.info("Destination Right Ascension: %d", rightAscension)
-
-                declination = struct.unpack("<i", data[16:4])[0]
-                logging.info("Destination Declination: %d", declination)
+                logging.info("Destination Right Ascension: %d", destRightAscension)
+                logging.info("Destination Declination: %d", destDeclination)
     
                 #remember to send coords back to stellarium 10 times in a row
         except (KeyboardInterrupt): #May end up needing to explicitly state KeyboardInterrupt; Needs further testing
