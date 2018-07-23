@@ -47,7 +47,7 @@ try:
                 logging.info("Destination Declination: %d", destDeclination)
     
                 #remember to send coords back to stellarium 10 times in a row
-        except (KeyboardInterrupt): #May end up needing to explicitly state KeyboardInterrupt; Needs further testing
+        except (KeyboardInterrupt):
             connection.close()
 except (KeyboardInterrupt):
     connection.close()
