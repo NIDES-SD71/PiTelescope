@@ -2,8 +2,9 @@
 from datetime import datetime
 from coordinates import coordinates
 from sense_hat import SenseHat
+from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_StepperMotor
+from MotorController import MotorController
 import sys, argparse, logging, logging.config, socket, struct, time
-#from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor, Adafruit_StepperMotor
 
 def angleToStellarium(Ra,Dec):
     return [int(Ra.h*(2147483648/12.0)), int(Dec.d*(1073741824/90.0))]
@@ -13,34 +14,41 @@ def stellariumToAngle(RaInt,DecInt):
     Dec = angles.Angle(d=(DecInt*90.0/1073741824))
     return [Ra, Dec]
 
+#Load logging config
+logging.config.fileConfig('logging.ini')
 
+#Parse arguments
 parser = argparse.ArgumentParser()
 parser.add_argument("port", help="Port to listen on", type=int)
 parser.add_argument("--host", help="IP to listen on")
 args = parser.parse_args()
 
-logging.config.fileConfig('logging.ini')
-
+#Set arguments
 # TODO probably needs to be moved to other file eventually
 HOST = args.host
 if(HOST == None):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(('8.8.8.8', 1))  # connect() for UDP doesn't send 
     HOST = s.getsockname()[0]
-
 PORT = args.port # TODO validate port
+
+#Setting up other stuff
 BUFFERSIZE = 160
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST,PORT))
+mh = Adafruit_MotorHAT(addr=0x60)
+mh2 = Adafruit_MotorHAT(addr=0x61)
+mc = MotorController(mh2.getStepper(1400, 1), None, mh2.getStepper(1400, 2))
 
-# TODO temp code that repeatedly logs data from any connecting host
 try:
+    #Listen for incoming connections
     while 1:
         logging.info("Listening on %s:%d", HOST, PORT)
         s.listen(1)
         connection, address = s.accept()
         logging.info('Incoming connection from %s', address)
         try:
+            #Do stuff while connected
             while 1:
                 data = connection.recv(BUFFERSIZE)
                 rawSize = len(data) 
@@ -51,14 +59,20 @@ try:
                     continue
                 logging.debug('Accepted')
         
+                # Read stellarium stuff
                 messageSize,messageType,messageTime,destRightAscension,destDeclination = struct.unpack("<hhqIi", data)
                 logging.info("Received Message Size: %d", messageSize)
                 logging.info("Received Message Type: %d", messageType)
                 logging.info("Received Message Time: %d", messageTime)
                 logging.info("Destination Right Ascension: %d", destRightAscension)
                 logging.info("Destination Declination: %d", destDeclination)
-    
                 
+                mc.DestPitch = 1
+                mc.DestRoll = 1
+                mc.DestYaw = 1
+                mc.MoveThread.start()
+
+                #Preparing sendback data
                 sense = SenseHat()
                 [yaw, roll, pitch] = sense.get_orientation_degrees().values()
                 logging.info("pitch: %s", pitch)
@@ -75,8 +89,9 @@ try:
                 sendbackdata = struct.pack("3iIii", 24, 0, time.time(), RaInt, DecInt,0) 
                 for x in range(10):
                     connection.send(sendbackdata)
-
         except (KeyboardInterrupt):
             connection.close()
+            mc.Enabled = False
 except (KeyboardInterrupt):
     connection.close()
+    mc.Quit = True
