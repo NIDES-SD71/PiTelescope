@@ -70,7 +70,7 @@ try:
                 mc.DestPitch = 1
                 mc.DestRoll = 1
                 mc.DestYaw = 1
-                mc.MoveThread.start()
+                mc.StartMove()
 
                 #Preparing sendback data
                 sense = SenseHat()
@@ -91,7 +91,6 @@ try:
                     connection.send(sendbackdata)
         except (KeyboardInterrupt):
             connection.close()
-            mc.Enabled = False
+            mc.StopMove()
 except (KeyboardInterrupt):
     connection.close()
-    mc.Quit = True
