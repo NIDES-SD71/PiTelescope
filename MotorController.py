@@ -24,14 +24,22 @@ class MotorController:
                 logging.debug("roll: %s", currentRoll)
 
     def StartMove(self):
+        logging.debug("StartMove() called")
         if(self.__moveThread is None):
+            logging.debug("Starting thread...")
             self.__quitMove = False
             self.__moveThread = threading.Thread(target=self.__move)
-            self.__moveThread.start
+            self.__moveThread.start()
+        else:
+            logging.debug("Thread already running")
 
     def StopMove(self):
+        logging.debug("StopMove() called")
         if(self.__moveThread is not None):
+            logging.debug("Quitting existing thread...")
             self.__quitMove = True
+        else:
+            logging.debug("No thread running")
         self.__moveThread = None
 
     def __init__(self, yawMotor, pitchMotor, rollMotor, destYaw = 0, destPitch = 0, destRoll = 0, invertYaw = False, invertPitch = False, invertRoll = False, yawPower = Adafruit_MotorHAT.SINGLE, pitchPower = Adafruit_MotorHAT.SINGLE, rollPower = Adafruit_MotorHAT.SINGLE):
@@ -49,5 +57,5 @@ class MotorController:
         self.RollPower = rollPower
         self.InvertRoll = invertRoll
         self.DestRoll = destRoll
-        self.__moveThread
-        self.__quitMove
+        self.__moveThread = None
+        self.__quitMove = False

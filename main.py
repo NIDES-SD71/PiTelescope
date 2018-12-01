@@ -4,7 +4,7 @@ from coordinates import coordinates
 from sense_hat import SenseHat
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_StepperMotor
 from MotorController import MotorController
-import sys, argparse, logging, logging.config, socket, struct, time
+import sys, argparse, logging, logging.config, socket, struct, time, angles
 
 def angleToStellarium(Ra,Dec):
     return [int(Ra.h*(2147483648/12.0)), int(Dec.d*(1073741824/90.0))]
