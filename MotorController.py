@@ -6,27 +6,32 @@ class MotorController:
     sense = SenseHat()
 
     def __move(self):
-        while 1:
+        while not self.__quitMove:
             [currentYaw, currentRoll, currentPitch] = self.sense.get_orientation_degrees().values()
             #Each .step() only steps by 1 to avoid any one movement blocking all others
+            __quitMove = True
             if (self.YawMotor != None and currentYaw != self.DestYaw):
                 self.YawMotor.step(1, Adafruit_MotorHAT.FORWARD if bool(currentYaw < self.DestYaw) ^ self.InvertYaw else Adafruit_MotorHAT.BACKWARD, self.YawPower)
+                __quitMove = False
                 logging.debug("yaw: %s", currentYaw)
             if (self.PitchMotor != None and currentPitch != self.DestPitch):
                 self.PitchMotor.step(1, Adafruit_MotorHAT.FORWARD if bool(currentPitch < self.DestPitch) ^ self.InvertPitch else Adafruit_MotorHAT.BACKWARD, self.PitchPower)
+                __quitMove = False
                 logging.debug("pitch: %s", currentPitch)
             if (self.RollMotor != None and currentRoll != self.DestRoll):
                 self.RollMotor.step(1, Adafruit_MotorHAT.FORWARD if bool(currentRoll < self.DestRoll) ^ self.InvertRoll else Adafruit_MotorHAT.BACKWARD, self.RollPower)
+                __quitMove = False
                 logging.debug("roll: %s", currentRoll)
 
     def StartMove(self):
         if(self.__moveThread is None):
+            self.__quitMove = False
             self.__moveThread = threading.Thread(target=self.__move)
             self.__moveThread.start
 
     def StopMove(self):
         if(self.__moveThread is not None):
-            self.__moveThread.join(1)
+            self.__quitMove = True
         self.__moveThread = None
 
     def __init__(self, yawMotor, pitchMotor, rollMotor, destYaw = 0, destPitch = 0, destRoll = 0, invertYaw = False, invertPitch = False, invertRoll = False, yawPower = Adafruit_MotorHAT.SINGLE, pitchPower = Adafruit_MotorHAT.SINGLE, rollPower = Adafruit_MotorHAT.SINGLE):
@@ -45,3 +50,4 @@ class MotorController:
         self.InvertRoll = invertRoll
         self.DestRoll = destRoll
         self.__moveThread
+        self.__quitMove

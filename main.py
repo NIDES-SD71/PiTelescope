@@ -67,9 +67,14 @@ try:
                 logging.info("Destination Right Ascension: %d", destRightAscension)
                 logging.info("Destination Declination: %d", destDeclination)
                 
-                mc.DestPitch = 1
-                mc.DestRoll = 1
-                mc.DestYaw = 1
+                # Preparing destination
+                [destYaw, destRoll] = stellariumToAngle(destRightAscension,destDeclination)
+                logging.info("Destination Roll: %d", destRoll.d)
+                logging.info("Destination Yaw: %d", destYaw.d)
+
+                # Using destination
+                mc.DestRoll = destRoll.d
+                mc.DestYaw = destYaw.d
                 mc.StartMove()
 
                 #Preparing sendback data
